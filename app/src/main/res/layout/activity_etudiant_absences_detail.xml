@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Coordonnées de l'étudiant -->
+    <TextView
+        android:id="@+id/etudiantNomTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Étudiant"
+        android:textSize="20sp"
+        android:textColor="#007BFF"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Bouton Ajouter absence -->
+    <Button
+        android:id="@+id/addAbsenceButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ajouter une absence"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#007BFF"
+        app:cornerRadius="8dp"
+        android:layout_marginBottom="8dp"
+        app:icon="@drawable/ic_add"
+        app:iconTint="#FFFFFF"/>
+
+    <!-- Bouton Contacter par email -->
+    <Button
+        android:id="@+id/contactEmailButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Contacter par email"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#28A745"
+        app:cornerRadius="8dp"
+        android:layout_marginBottom="16dp"
+        app:icon="@drawable/ic_email"
+        app:iconTint="#FFFFFF"/>
+
+    <!-- RecyclerView pour les absences -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/absencesRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+</LinearLayout>

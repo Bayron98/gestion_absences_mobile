@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center">
+
+    <!-- Titre ou logo -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gestion des Absences"
+        android:textSize="28sp"
+        android:textColor="#007BFF"
+        android:textStyle="bold"
+        android:layout_marginBottom="32dp"/>
+
+    <!-- Sélection du rôle -->
+    <RadioGroup
+        android:id="@+id/roleGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <RadioButton
+            android:id="@+id/roleEtudiant"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Étudiant"
+            android:textColor="#333333"
+            app:buttonTint="#007BFF"/>
+
+        <RadioButton
+            android:id="@+id/roleEnseignant"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Enseignant"
+            android:textColor="#333333"
+            app:buttonTint="#007BFF"/>
+    </RadioGroup>
+
+    <!-- Champ Nom -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nom"
+        app:startIconDrawable="@drawable/ic_person"
+        app:startIconTint="#007BFF"
+        app:boxStrokeColor="#007BFF"
+        app:hintTextColor="#007BFF"
+        android:layout_marginBottom="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/nomInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#333333"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Champ Mot de passe -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Mot de passe"
+        app:startIconDrawable="@drawable/ic_lock"
+        app:startIconTint="#007BFF"
+        app:boxStrokeColor="#007BFF"
+        app:hintTextColor="#007BFF"
+        app:passwordToggleEnabled="true"
+        android:layout_marginBottom="24dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:textColor="#333333"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Bouton Connexion -->
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Connexion"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#007BFF"
+        app:cornerRadius="8dp"
+        android:elevation="4dp"
+        android:layout_marginTop="16dp"/>
+</LinearLayout>
