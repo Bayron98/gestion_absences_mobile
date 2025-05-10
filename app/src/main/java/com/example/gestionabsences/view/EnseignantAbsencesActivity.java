@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ public class EnseignantAbsencesActivity extends AppCompatActivity {
     private Spinner matiereSpinner;
     private RecyclerView etudiantsRecyclerView;
     private EtudiantAbsenceAdapter etudiantAdapter;
+    private Button logoutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,7 @@ public class EnseignantAbsencesActivity extends AppCompatActivity {
 
         // Récupérer l'ID de l'enseignant depuis l'intent
         int enseignantId = getIntent().getIntExtra("enseignantId", -1);
-        if ( enseignantId == -1) {
+        if (enseignantId == -1) {
             Toast.makeText(this, "Erreur: ID enseignant non trouvé", Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -51,17 +53,17 @@ public class EnseignantAbsencesActivity extends AppCompatActivity {
         // Créer un ArrayAdapter personnalisé pour afficher uniquement le nom de la matière
         ArrayAdapter<Matiere> spinnerAdapter = new ArrayAdapter<Matiere>(this, android.R.layout.simple_spinner_item, new ArrayList<>()) {
             @Override
-            public View getView(int position, View convertView, android.view.ViewGroup parent) {
+            public View getView(int position, View convertView, ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
-                android.widget.TextView textView = (android.widget.TextView) view;
+                TextView textView = (TextView) view;
                 textView.setText(getItem(position).nom);
                 return view;
             }
 
             @Override
-            public View getDropDownView(int position, View convertView, android.view.ViewGroup parent) {
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
                 View view = super.getDropDownView(position, convertView, parent);
-                android.widget.TextView textView = (android.widget.TextView) view;
+                TextView textView = (TextView) view;
                 textView.setText(getItem(position).nom);
                 return view;
             }
@@ -69,12 +71,21 @@ public class EnseignantAbsencesActivity extends AppCompatActivity {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         matiereSpinner.setAdapter(spinnerAdapter);
 
+        // Ajouter un placeholder pour le Spinner
+        Matiere placeholder = new Matiere();
+        placeholder.id = -1;
+        placeholder.nom = "Sélectionner une matière";
+        spinnerAdapter.add(placeholder);
+        matiereSpinner.setSelection(0); // Sélectionner le placeholder par défaut
+
         // Observer les matières
         matiereViewModel.getMatieresByEnseignant(enseignantId).observe(this, matieres -> {
             if (matieres != null && !matieres.isEmpty()) {
                 spinnerAdapter.clear();
+                spinnerAdapter.add(placeholder); // Ajouter le placeholder en premier
                 spinnerAdapter.addAll(matieres);
                 spinnerAdapter.notifyDataSetChanged();
+                matiereSpinner.setSelection(0); // Sélectionner le placeholder
             } else {
                 Toast.makeText(this, "Aucune matière trouvée", Toast.LENGTH_SHORT).show();
             }
@@ -91,6 +102,11 @@ public class EnseignantAbsencesActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Matiere selectedMatiere = (Matiere) parent.getItemAtPosition(position);
+                if (selectedMatiere.id == -1) {
+                    // Placeholder sélectionné, vider le RecyclerView
+                    etudiantAdapter.updateEtudiants(new ArrayList<>());
+                    return;
+                }
                 // Observer les étudiants avec leur nombre d'absences
                 absenceViewModel.getEtudiantsWithAbsenceCount(selectedMatiere.id).observe(EnseignantAbsencesActivity.this, etudiants -> {
                     if (etudiants != null) {
@@ -105,6 +121,14 @@ public class EnseignantAbsencesActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
                 // Rien à faire
             }
+        });
+
+        logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
         });
     }
 

@@ -40,4 +40,18 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
+
+    <!-- Bouton Déconnexion -->
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/button_rounded_logout"
+        android:text="DÉCONNEXION"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:drawablePadding="8dp"
+        android:elevation="2dp"/>
 </LinearLayout>

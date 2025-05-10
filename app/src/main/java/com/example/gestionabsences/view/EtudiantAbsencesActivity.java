@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,6 +33,7 @@ public class EtudiantAbsencesActivity extends AppCompatActivity {
     private RecyclerView absencesRecyclerView;
     private AbsenceAdapter absenceAdapter;
     private ActivityResultLauncher<Intent> filePickerLauncher;
+    private Button logoutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +105,14 @@ public class EtudiantAbsencesActivity extends AppCompatActivity {
                 }
             }
         });
+
+        logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        });
     }
 
     // Copier le fichier depuis l'URI vers le stockage local
@@ -166,6 +176,32 @@ public class EtudiantAbsencesActivity extends AppCompatActivity {
             holder.justificatifTextView.setText("Justificatif: " + (absence.justificatif != null ? "Oui" : "Non"));
             holder.penaliteTextView.setText("Pénalité: " + (absence.penalite != null ? absence.penalite : "Aucune"));
             holder.itemView.setTag(absence); // Stocker l'absence dans le tag
+
+            // Gérer la visibilité du bouton Voir Justificatif
+            holder.viewJustificatifButton.setVisibility(absence.justificatif != null ? View.VISIBLE : View.GONE);
+            holder.viewJustificatifButton.setOnClickListener(v -> {
+                if (absence.justificatif != null) {
+                    File file = new File(getFilesDir(), absence.justificatif);
+                    if (file.exists()) {
+                        Uri fileUri = FileProvider.getUriForFile(
+                                EtudiantAbsencesActivity.this,
+                                "com.example.gestionabsences.fileprovider",
+                                file
+                        );
+                        Intent viewIntent = new Intent(Intent.ACTION_VIEW);
+                        viewIntent.setDataAndType(fileUri, getContentResolver().getType(fileUri));
+                        viewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        try {
+                            startActivity(Intent.createChooser(viewIntent, "Ouvrir le justificatif"));
+                        } catch (Exception e) {
+                            Toast.makeText(EtudiantAbsencesActivity.this, "Aucune application pour ouvrir le fichier", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(EtudiantAbsencesActivity.this, "Fichier justificatif non trouvé", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
             holder.addJustificatifButton.setOnClickListener(v -> {
                 lastClickedPosition = holder.getAdapterPosition();
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -186,7 +222,7 @@ public class EtudiantAbsencesActivity extends AppCompatActivity {
 
         class AbsenceViewHolder extends RecyclerView.ViewHolder {
             TextView dateTextView, seanceTextView, justificatifTextView, penaliteTextView;
-            Button addJustificatifButton;
+            Button addJustificatifButton, viewJustificatifButton;
 
             public AbsenceViewHolder(View itemView) {
                 super(itemView);
@@ -195,6 +231,7 @@ public class EtudiantAbsencesActivity extends AppCompatActivity {
                 justificatifTextView = itemView.findViewById(R.id.justificatifTextView);
                 penaliteTextView = itemView.findViewById(R.id.penaliteTextView);
                 addJustificatifButton = itemView.findViewById(R.id.addJustificatifButton);
+                viewJustificatifButton = itemView.findViewById(R.id.viewJustificatifButton);
             }
         }
     }

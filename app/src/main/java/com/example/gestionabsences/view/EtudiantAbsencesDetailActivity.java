@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +20,7 @@ import com.example.gestionabsences.model.Absence;
 import com.example.gestionabsences.model.Etudiant;
 import com.example.gestionabsences.viewmodel.AbsenceViewModel;
 import com.example.gestionabsences.viewmodel.EtudiantViewModel;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +30,6 @@ public class EtudiantAbsencesDetailActivity extends AppCompatActivity {
     private TextView etudiantNomTextView;
     private Button addAbsenceButton;
     private Button contactEmailButton;
-
     private RecyclerView absencesRecyclerView;
     private AbsenceDetailAdapter absenceAdapter;
 
@@ -54,7 +55,6 @@ public class EtudiantAbsencesDetailActivity extends AppCompatActivity {
         etudiantNomTextView = findViewById(R.id.etudiantNomTextView);
         addAbsenceButton = findViewById(R.id.addAbsenceButton);
         contactEmailButton = findViewById(R.id.contactEmailButton);
-
         absencesRecyclerView = findViewById(R.id.absencesRecyclerView);
         absencesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         absenceAdapter = new AbsenceDetailAdapter(new ArrayList<>());
@@ -131,6 +131,31 @@ public class EtudiantAbsencesDetailActivity extends AppCompatActivity {
             holder.justificatifTextView.setText("Justificatif: " + (absence.justificatif != null ? "Oui" : "Non"));
             holder.penaliteTextView.setText("Pénalité: " + (absence.penalite != null ? absence.penalite : "Aucune"));
 
+            // Gérer la visibilité du bouton Voir Justificatif
+            holder.viewJustificatifButton.setVisibility(absence.justificatif != null ? View.VISIBLE : View.GONE);
+            holder.viewJustificatifButton.setOnClickListener(v -> {
+                if (absence.justificatif != null) {
+                    File file = new File(getFilesDir(), absence.justificatif);
+                    if (file.exists()) {
+                        Uri fileUri = FileProvider.getUriForFile(
+                                EtudiantAbsencesDetailActivity.this,
+                                "com.example.gestionabsences.fileprovider",
+                                file
+                        );
+                        Intent viewIntent = new Intent(Intent.ACTION_VIEW);
+                        viewIntent.setDataAndType(fileUri, getContentResolver().getType(fileUri));
+                        viewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        try {
+                            startActivity(Intent.createChooser(viewIntent, "Ouvrir le justificatif"));
+                        } catch (Exception e) {
+                            Toast.makeText(EtudiantAbsencesDetailActivity.this, "Aucune application pour ouvrir le fichier", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(EtudiantAbsencesDetailActivity.this, "Fichier justificatif non trouvé", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
             // Bouton Modifier
             holder.editButton.setOnClickListener(v -> {
                 Intent intent = new Intent(EtudiantAbsencesDetailActivity.this, UpdateAbsenceActivity.class);
@@ -159,7 +184,7 @@ public class EtudiantAbsencesDetailActivity extends AppCompatActivity {
 
         class AbsenceViewHolder extends RecyclerView.ViewHolder {
             TextView dateTextView, seanceTextView, justificatifTextView, penaliteTextView;
-            Button editButton, deleteButton;
+            Button editButton, deleteButton, viewJustificatifButton;
 
             public AbsenceViewHolder(View itemView) {
                 super(itemView);
@@ -169,6 +194,7 @@ public class EtudiantAbsencesDetailActivity extends AppCompatActivity {
                 penaliteTextView = itemView.findViewById(R.id.penaliteTextView);
                 editButton = itemView.findViewById(R.id.editButton);
                 deleteButton = itemView.findViewById(R.id.deleteButton);
+                viewJustificatifButton = itemView.findViewById(R.id.viewJustificatifButton);
             }
         }
     }

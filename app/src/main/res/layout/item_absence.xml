@@ -52,7 +52,7 @@
 
         <Button
             android:id="@+id/addJustificatifButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Ajouter justificatif"
             android:textColor="#FFFFFF"
@@ -61,5 +61,19 @@
             android:layout_marginTop="8dp"
             app:icon="@drawable/ic_add"
             app:iconTint="#FFFFFF"/>
+
+        <Button
+            android:id="@+id/viewJustificatifButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Voir justificatif"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#007BFF"
+            app:cornerRadius="4dp"
+            android:layout_marginTop="8dp"
+            app:icon="@drawable/ic_file"
+            app:iconTint="#FFFFFF"
+            android:visibility="gone" />
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

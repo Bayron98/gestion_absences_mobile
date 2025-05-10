@@ -8,7 +8,11 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.gestionabsences.R;
 import com.example.gestionabsences.model.Absence;
 import com.example.gestionabsences.viewmodel.AbsenceViewModel;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class UpdateAbsenceActivity extends AppCompatActivity {
     private AbsenceViewModel absenceViewModel;
@@ -37,6 +41,21 @@ public class UpdateAbsenceActivity extends AppCompatActivity {
         seanceInput = findViewById(R.id.seanceInput);
         penaliteInput = findViewById(R.id.penaliteInput);
         saveButton = findViewById(R.id.saveButton);
+
+        // Configurer le DatePicker
+        dateInput.setOnClickListener(v -> {
+            MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Sélectionner une date")
+                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                    .build();
+            datePicker.addOnPositiveButtonClickListener(selection -> {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(selection);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                dateInput.setText(sdf.format(calendar.getTime()));
+            });
+            datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
+        });
 
         // Charger l'absence
         absenceViewModel.getAbsenceById(absenceId).observe(this, abs -> {

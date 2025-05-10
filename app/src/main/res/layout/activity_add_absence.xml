@@ -31,7 +31,8 @@
             android:id="@+id/dateInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="date"
+            android:focusable="false"
+            android:clickable="true"
             android:textColor="#333333"/>
     </com.google.android.material.textfield.TextInputLayout>
 
