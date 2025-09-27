@@ -7,6 +7,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 import com.example.gestionabsences.model.Absence;
+import com.example.gestionabsences.model.AbsenceWithMatiere;
 import java.util.List;
 
 @Dao
@@ -42,4 +43,18 @@ public interface AbsenceDao {
     // Récupérer les absences d’un étudiant pour une matière spécifique
     @Query("SELECT * FROM absences WHERE etudiantId = :etudiantId AND matiereId = :matiereId")
     LiveData<List<Absence>> getAbsencesByEtudiantAndMatiere(int etudiantId, int matiereId);
+
+    // Récupérer les absences d’un étudiant avec le nom de la matière (ancienne méthode)
+    @Query("SELECT a.*, m.nom AS matiereNom " +
+            "FROM absences a " +
+            "LEFT JOIN matieres m ON a.matiereId = m.id " +
+            "WHERE a.etudiantId = :etudiantId")
+    LiveData<List<Absence>> getAbsencesWithMatiereNameByEtudiant(int etudiantId);
+
+    // Nouvelle méthode utilisant AbsenceWithMatiere
+    @Query("SELECT a.id, a.etudiantId, a.matiereId, a.date, a.seance, a.justificatif, a.penalite, m.nom AS matiereNom " +
+            "FROM absences a " +
+            "LEFT JOIN matieres m ON a.matiereId = m.id " +
+            "WHERE a.etudiantId = :etudiantId")
+    LiveData<List<AbsenceWithMatiere>> getAbsencesWithMatiereByEtudiant(int etudiantId);
 }

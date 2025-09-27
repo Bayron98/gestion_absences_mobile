@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.gestionabsences.R;
 import com.example.gestionabsences.model.Absence;
+import com.example.gestionabsences.model.AbsenceWithMatiere;
 import com.example.gestionabsences.viewmodel.AbsenceViewModel;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class EtudiantAbsencesActivity extends AppCompatActivity {
     private AbsenceViewModel absenceViewModel;
@@ -34,11 +37,15 @@ public class EtudiantAbsencesActivity extends AppCompatActivity {
     private AbsenceAdapter absenceAdapter;
     private ActivityResultLauncher<Intent> filePickerLauncher;
     private Button logoutButton;
+    private ExecutorService executorService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_etudiant_absences);
+
+        // Initialiser l'ExecutorService
+        executorService = Executors.newSingleThreadExecutor();
 
         // Récupérer l'ID de l'étudiant depuis l'intent
         int etudiantId = getIntent().getIntExtra("etudiantId", -1);
@@ -57,8 +64,8 @@ public class EtudiantAbsencesActivity extends AppCompatActivity {
         absenceAdapter = new AbsenceAdapter(new ArrayList<>());
         absencesRecyclerView.setAdapter(absenceAdapter);
 
-        // Observer les absences de l'étudiant
-        absenceViewModel.getAbsencesByEtudiant(etudiantId).observe(this, absences -> {
+        // Observer les absences de l'étudiant avec le nom de la matière
+        absenceViewModel.getAbsencesWithMatiereByEtudiant(etudiantId).observe(this, absences -> {
             if (absences != null) {
                 absenceAdapter.updateAbsences(absences);
             } else {
@@ -72,7 +79,7 @@ public class EtudiantAbsencesActivity extends AppCompatActivity {
                 Uri fileUri = result.getData().getData();
                 if (fileUri != null) {
                     // Récupérer l'absence associée
-                    Absence selectedAbsence = (Absence) absencesRecyclerView
+                    AbsenceWithMatiere selectedAbsence = (AbsenceWithMatiere) absencesRecyclerView
                             .findViewHolderForAdapterPosition(absenceAdapter.getLastClickedPosition())
                             .itemView.getTag();
                     if (selectedAbsence != null) {
@@ -92,9 +99,11 @@ public class EtudiantAbsencesActivity extends AppCompatActivity {
                             // Copier le fichier dans le stockage local
                             copyFileToLocalStorage(fileUri, destinationFile);
 
-                            // Mettre à jour le champ justificatif
-                            selectedAbsence.justificatif = "justificatifs/" + fileName;
-                            absenceViewModel.updateAbsence(selectedAbsence);
+                            // Mettre à jour le champ justificatif (convertir en Absence)
+                            Absence absence = new Absence(selectedAbsence.etudiantId, selectedAbsence.matiereId,
+                                    selectedAbsence.date, selectedAbsence.seance, "justificatifs/" + fileName, selectedAbsence.penalite);
+                            absence.id = selectedAbsence.id;
+                            absenceViewModel.updateAbsence(absence);
                             Toast.makeText(this, "Justificatif ajouté pour l'absence du " + selectedAbsence.date, Toast.LENGTH_SHORT).show();
                         } catch (Exception e) {
                             Toast.makeText(this, "Erreur lors de l'ajout du justificatif: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -143,16 +152,24 @@ public class EtudiantAbsencesActivity extends AppCompatActivity {
         return ".file"; // Fallback
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (executorService != null) {
+            executorService.shutdown();
+        }
+    }
+
     // Adaptateur pour le RecyclerView
     private class AbsenceAdapter extends RecyclerView.Adapter<AbsenceAdapter.AbsenceViewHolder> {
-        private List<Absence> absences;
+        private List<AbsenceWithMatiere> absences;
         private int lastClickedPosition = -1;
 
-        public AbsenceAdapter(List<Absence> absences) {
+        public AbsenceAdapter(List<AbsenceWithMatiere> absences) {
             this.absences = absences;
         }
 
-        public void updateAbsences(List<Absence> newAbsences) {
+        public void updateAbsences(List<AbsenceWithMatiere> newAbsences) {
             this.absences = newAbsences;
             notifyDataSetChanged();
         }
@@ -170,14 +187,14 @@ public class EtudiantAbsencesActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(AbsenceViewHolder holder, int position) {
-            Absence absence = absences.get(position);
+            AbsenceWithMatiere absence = absences.get(position);
             holder.dateTextView.setText(absence.date);
+            holder.matiereTextView.setText("Matière: " + (absence.matiereNom != null ? absence.matiereNom : "Inconnue"));
             holder.seanceTextView.setText("Séance: " + absence.seance);
             holder.justificatifTextView.setText("Justificatif: " + (absence.justificatif != null ? "Oui" : "Non"));
             holder.penaliteTextView.setText("Pénalité: " + (absence.penalite != null ? absence.penalite : "Aucune"));
             holder.itemView.setTag(absence); // Stocker l'absence dans le tag
 
-            // Gérer la visibilité du bouton Voir Justificatif
             holder.viewJustificatifButton.setVisibility(absence.justificatif != null ? View.VISIBLE : View.GONE);
             holder.viewJustificatifButton.setOnClickListener(v -> {
                 if (absence.justificatif != null) {
@@ -221,12 +238,13 @@ public class EtudiantAbsencesActivity extends AppCompatActivity {
         }
 
         class AbsenceViewHolder extends RecyclerView.ViewHolder {
-            TextView dateTextView, seanceTextView, justificatifTextView, penaliteTextView;
+            TextView dateTextView, matiereTextView, seanceTextView, justificatifTextView, penaliteTextView;
             Button addJustificatifButton, viewJustificatifButton;
 
             public AbsenceViewHolder(View itemView) {
                 super(itemView);
                 dateTextView = itemView.findViewById(R.id.dateTextView);
+                matiereTextView = itemView.findViewById(R.id.matiereTextView);
                 seanceTextView = itemView.findViewById(R.id.seanceTextView);
                 justificatifTextView = itemView.findViewById(R.id.justificatifTextView);
                 penaliteTextView = itemView.findViewById(R.id.penaliteTextView);

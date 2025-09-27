@@ -22,7 +22,14 @@
             android:text="Date"
             android:textSize="16sp"
             android:textColor="#333333"/>
-
+        <TextView
+            android:id="@+id/matiereTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Matière"
+            android:textSize="14sp"
+            android:textColor="#333333"
+            android:layout_marginTop="4dp"/>
         <TextView
             android:id="@+id/seanceTextView"
             android:layout_width="wrap_content"

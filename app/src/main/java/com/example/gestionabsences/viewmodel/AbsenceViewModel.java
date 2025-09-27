@@ -7,6 +7,7 @@ import com.example.gestionabsences.database.AppDatabase;
 import com.example.gestionabsences.dao.AbsenceDao;
 import com.example.gestionabsences.dao.EtudiantAbsenceCount;
 import com.example.gestionabsences.model.Absence;
+import com.example.gestionabsences.model.AbsenceWithMatiere;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,6 +61,16 @@ public class AbsenceViewModel extends AndroidViewModel {
     // Récupérer les absences d’un étudiant pour une matière
     public LiveData<List<Absence>> getAbsencesByEtudiantAndMatiere(int etudiantId, int matiereId) {
         return absenceDao.getAbsencesByEtudiantAndMatiere(etudiantId, matiereId);
+    }
+
+    // Récupérer les absences d’un étudiant avec le nom de la matière (ancienne méthode)
+    public LiveData<List<Absence>> getAbsencesWithMatiereNameByEtudiant(int etudiantId) {
+        return absenceDao.getAbsencesWithMatiereNameByEtudiant(etudiantId);
+    }
+
+    // Nouvelle méthode pour AbsenceWithMatiere
+    public LiveData<List<AbsenceWithMatiere>> getAbsencesWithMatiereByEtudiant(int etudiantId) {
+        return absenceDao.getAbsencesWithMatiereByEtudiant(etudiantId);
     }
 
     @Override

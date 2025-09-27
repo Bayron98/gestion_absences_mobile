@@ -2,6 +2,7 @@ package com.example.gestionabsences.model;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "absences",
@@ -25,6 +26,8 @@ public class Absence {
     public String seance;
     public String justificatif;
     public String penalite;
+
+
 
     // Constructeur
     public Absence(int etudiantId, int matiereId, String date, String seance, String justificatif, String penalite) {

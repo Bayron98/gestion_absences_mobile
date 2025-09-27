@@ -27,4 +27,6 @@ public interface MatiereDao {
     // Récupérer une matière par ID
     @Query("SELECT * FROM matieres WHERE id = :id")
     LiveData<Matiere> getMatiereById(int id);
+    @Query("SELECT * FROM matieres")
+    LiveData<List<Matiere>> getAllMatieres();
 }

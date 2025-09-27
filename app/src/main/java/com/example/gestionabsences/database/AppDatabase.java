@@ -50,13 +50,13 @@ public abstract class AppDatabase extends RoomDatabase {
             if (matiereDao.getMatieresByEnseignant(1).getValue() == null || matiereDao.getMatieresByEnseignant(1).getValue().isEmpty()) {
                 // Insérer des enseignants (id=1, 2)
                 Enseignant enseignant1 = new Enseignant();
-                enseignant1.nom = "Dr. Dupont";
+                enseignant1.nom = "Ahmad Karim";
                 enseignant1.motDePasse = "pass123";
                 enseignantDao.insert(enseignant1); // id=1
 
                 Enseignant enseignant2 = new Enseignant();
-                enseignant2.nom = "Prof. Martin";
-                enseignant2.motDePasse = "pass456";
+                enseignant2.nom = "Fatima Zahra";
+                enseignant2.motDePasse = "pass123";
                 enseignantDao.insert(enseignant2); // id=2
 
                 // Insérer des matières (id=1, 2, 3)
@@ -77,31 +77,31 @@ public abstract class AppDatabase extends RoomDatabase {
 
                 // Insérer des étudiants (id=1, 2, 3, 4)
                 Etudiant etudiant1 = new Etudiant();
-                etudiant1.nom = "Alice Dubois";
+                etudiant1.nom = "Salim Hafid";
                 etudiant1.cne = "CNE001";
-                etudiant1.motDePasse = "alice123";
-                etudiant1.email = "alice.dubois@example.com";
+                etudiant1.motDePasse = "pass123";
+                etudiant1.email = "salim.hafid@gmail.com";
                 etudiantDao.insert(etudiant1); // id=1
 
                 Etudiant etudiant2 = new Etudiant();
-                etudiant2.nom = "Bob Martin";
+                etudiant2.nom = "Mohammed Salah";
                 etudiant2.cne = "CNE002";
-                etudiant2.motDePasse = "bob456";
-                etudiant2.email = "bob.martin@example.com";
+                etudiant2.motDePasse = "pass123";
+                etudiant2.email = "mohammed.salah@gmail.com";
                 etudiantDao.insert(etudiant2); // id=2
 
                 Etudiant etudiant3 = new Etudiant();
-                etudiant3.nom = "Claire Dupont";
+                etudiant3.nom = "Amine Alaoui";
                 etudiant3.cne = "CNE003";
-                etudiant3.motDePasse = "claire789";
-                etudiant3.email = "claire.dupont@example.com";
+                etudiant3.motDePasse = "pass123";
+                etudiant3.email = "amine.alaoui@gmail.com";
                 etudiantDao.insert(etudiant3); // id=3
 
                 Etudiant etudiant4 = new Etudiant();
-                etudiant4.nom = "David Leclerc";
+                etudiant4.nom = "Sara Lamine";
                 etudiant4.cne = "CNE004";
-                etudiant4.motDePasse = "david012";
-                etudiant4.email = "david.leclerc@example.com";
+                etudiant4.motDePasse = "pass123";
+                etudiant4.email = "sara.lamine@example.com";
                 etudiantDao.insert(etudiant4); // id=4
 
                 // Insérer des absences
